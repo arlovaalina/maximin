@@ -8,6 +8,9 @@ def initialize_points():
 
 def main():
     initialize_points()
+    initialize_first_centroid()
+    distances = find_distances()
+    second_centroid = max(distances)
 
 if __name__ == "__main__":
     main()
