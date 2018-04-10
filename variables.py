@@ -1,10 +1,10 @@
 WINDOW_WIDTH = 950
 WINDOW_HEIGHT = 550
 
-FIELD_WIDTH = 700
-FIELD_HEIGHT = 500
+FIELD_WIDTH = 10
+FIELD_HEIGHT = 10
 
-points_count = 1000
+points_count = 6
 
 COLORS = [
     "#000000", #black

@@ -1,6 +1,8 @@
 from variables import *
 from functools import reduce
 from tkinter import *
+from statistics import mean
+from itertools import combinations
 import random
 import math
 
@@ -8,10 +10,10 @@ def paint_points(points, centroids):
     canvas.delete("all")
     for i in range(0, points_count):
         canvas.create_oval(points[i]["x"], points[i]["y"], points[i]["x"] + 1, points[i]["y"] + 1,
-            fill=COLORS[points[i]["class"]], outline=COLORS[points[i]["class"]])
+            fill=COLORS[points[i]["class"] % 20], outline=COLORS[points[i]["class"] % 20])
     for j in range(0, len(centroids)):
         canvas.create_oval(centroids[j]["x"], centroids[j]["y"], centroids[j]["x"] + 10, centroids[j]["y"] + 10,
-            fill=COLORS[centroids[j]["class"]], outline=COLORS[centroids[j]["class"]])
+            fill=COLORS[centroids[j]["class"] % 20], outline=COLORS[centroids[j]["class"] % 20])
 
 def euclid_distance(a, b):
     return math.sqrt((a["x"] - b["x"]) ** 2 + (a["y"] - b["y"]) ** 2)
@@ -39,6 +41,7 @@ def allocate_classes(points, centroids):
         points[i].update({"class": centroid["class"]})
 
 def find_new_centroid(points, centroids):
+    print(centroids)
     distances = []
     for i in range(len(centroids)):
         class_points = list(filter(lambda x: x["class"] == i, points))
@@ -49,35 +52,31 @@ def find_new_centroid(points, centroids):
     new_centroid = max(distances, key=lambda x: x["distance"])
     return new_centroid
 
-def check_new_centroid(centroid, centroids):
-    distance = 0
-    for i in range(len(centroids)):
-        for j in range(len(centroids)):
-            distance = distance + euclid_distance(centroids[i], centroids[j])
-    distance = distance / 2
-    mean_distance = distance / len(centroids)
-    if (centroid["distance"] < mean_distance / 2):
-        return False
-    return True
+def is_new_centroid(centroid, centroids):
+    mean_distance = mean((euclid_distance(x, y) for x, y in combinations(centroids, 2)))
+    if (centroid["distance"] > mean_distance / 2):
+        return True
+    return False
 
 def start_algorithm(event):
     print('start')
     points = initialize_points()
+    print(points)
     first_centroid = initialize_first_centroid(points)
     second_centroid = find_second_centroid(points, first_centroid)
     centroids = [first_centroid, second_centroid]
     continue_clasterization = True
-    while (continue_clasterization):
-        paint_points(points, centroids)
-        root.update()
-        allocate_classes(points, centroids)
-        new_centroid = find_new_centroid(points, centroids)
-        centroid_checked = check_new_centroid(new_centroid, centroids)
-        if (centroid_checked):
-            new_centroid.update({"class": len(centroids)})
-            centroids.append(new_centroid)
-        else:
-            continue_clasterization = False
+    # while (continue_clasterization):
+    #     paint_points(points, centroids)
+    #     root.update()
+    #     allocate_classes(points, centroids)
+    #     new_centroid = find_new_centroid(points, centroids)
+    #     centroid_checked = is_new_centroid(new_centroid, centroids)
+    #     if (centroid_checked):
+    #         new_centroid.update({"class": len(centroids)})
+    #         centroids.append(new_centroid)
+    #     else:
+    #         continue_clasterization = False
     print('finish')
 
 root = Tk()
